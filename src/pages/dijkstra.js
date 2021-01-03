@@ -1,5 +1,6 @@
 import React from "react"
 import {Container} from "reactstrap"
+
 function Distance_Generator() {
   return getRandomInt(-1, 100)
 }
@@ -27,6 +28,20 @@ function generate_value_matrix(nodes) {
   }
 }
 
+class node {
+  constructor(index) {
+    this.visited= false;
+    this.best_parent = "";
+    this.index = index
+  }
+}
+
+class priority_queue {
+
+  constructor() {
+    this.queue = new Array();
+  }
+}
 
 class Dijkstra extends React.Component {
 
@@ -48,6 +63,7 @@ class Dijkstra extends React.Component {
         <input type="text" placeholder = {this.state.number} onKeyDown = {this.enter_key_detect}/> 
         <br />
         Please Enter Number of Nodes {this.state.number}
+        
       </Container>
     )
   }
