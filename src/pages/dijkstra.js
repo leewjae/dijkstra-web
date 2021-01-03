@@ -29,16 +29,25 @@ function generate_value_matrix(nodes) {
 
 
 class Dijkstra extends React.Component {
+
+  state = {
+    number : 0
+  }
+
+  enter_key_detect = (e) => {
+    if (e.key === 'Enter') {
+        this.setState({
+          number : e.target.value
+        })
+    }
+  }
+
   render() {
     return (
       <Container>
-        <textarea id = "number-of-nodes">
-          
-        </textarea>
-        <button title = "submit" onClick = {generate_value_matrix()}>
-          
-        </button>
-        Random generated number is {Distance_Generator()}
+        <input type="text" placeholder = {this.state.number} onKeyDown = {this.enter_key_detect}/> 
+        <br />
+        Please Enter Number of Nodes {this.state.number}
       </Container>
     )
   }
