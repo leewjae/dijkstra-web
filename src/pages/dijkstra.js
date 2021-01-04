@@ -1,5 +1,5 @@
 import React from "react"
-import {Container} from "reactstrap"
+import {Container, Button} from "reactstrap"
 
 //no disconnection
 function distance_generator() {
@@ -66,29 +66,40 @@ function distance_matrix_generator(nodes) {
   return distance_matrix;
 }
 
-function start_dijkstra(node_array) {
-  return console.log(node_array)
+function start_dijkstra(node_array, target, num_node) {
+  
+  var pq = new Priority_queue(num_node);
+  add_to_tent(pq, node_array[0],node_array); // add the very first node.
+  while(!pq.empty) {
+    var smallest_node = pq.pop();
+    if (smallest_node.name === target.name) {
+      console.log("founded it!")
+      return;
+    }
+    add_to_tent(pq, smallest_node, node_array)
+  }
 }
 
 //will receive the priority que instance and a node instance
 function add_to_tent(pq, node, node_array) {
   for (var i = 0; i < node.distance_array.length; ++i) {
     // if it is conntected, (which means it is not disconnected)
+    // and the target node is never visited,
     // add to our tent priority queue.
-    if (node.distance_array[i] !== -1) { 
-      var tent_node = new Tent_Node(node.distance_array[i], node_array[i])
+    if ((node.distance_array[i] !== -1) && (node_array[i].visited !== true)) { 
+      var tent_node = new Tent_Node(node.distance_array[i], node_array[i],node.name);
       pq.push(tent_node);
     }
   }
 }
 
 class Tent_Node {
-  constructor(distance, node) {
+  constructor(distance, node, parent) {
     this.distance = distance;
     this.node = node;
+    this.parent = parent;
   }
 }
-
 class Node {
   constructor(name, distance_array) {
     this.visited= false;
@@ -102,16 +113,18 @@ class Node {
 
 class Priority_queue { //smallest will be executed first
 
-  constructor(node) {
-    this.queue = new Array(node);
+  constructor(num_node) {
+    this.queue = new Array(num_node);
     this.top_index = 0;
   }
 
+  //returns -> nothing
   push = (element) => {
     for (var x = 0; x < this.queue.length; ++x) {
       if (typeof(this.queue[x]) == 'undefined') { // if something is defined 
         this.queue[x] = element;
-        if (this.queue[x] < this.queue[this.top_index]) { //new one is smallest
+        //since our pq will be a pq of tent node, we will compare its distances
+        if (this.queue[x].distance < this.queue[this.top_index].distance) { //new one is smallest
           this.top_index = x;
         } 
         return;
@@ -119,7 +132,9 @@ class Priority_queue { //smallest will be executed first
     }
   }
 
+  //returns -> node
   pop = () => { // delete the top
+    // this will return the node.
     var return_value = this.queue.splice(this.top_index, this.top_index + 1)[0]; // pop the highest priority
 
     //reset the priority
@@ -134,10 +149,12 @@ class Priority_queue { //smallest will be executed first
     return return_value;
   }
 
+  //returns -> the smallest node
   top = () => {
     return this.queue[this.top_index];
   }
 
+  //returns -> nothing
   empty = () => {
     for (var x = 0; x < this.queue.length; ++x) {
       if (typeof(this.queue[x]) !== 'undefined') { // if something is defined 
@@ -151,14 +168,17 @@ class Priority_queue { //smallest will be executed first
 class Dijkstra extends React.Component {
 
   state = {
-    nodes : 0,
-    node_array: undefined // this value will store the node instances
+    nodes : 10,
+    node_array: generate_set_of_nodes(10, distance_matrix_generator(10)), // this value will store the node instances
+    distance_matrix : distance_matrix_generator(10)
   }
 
   enter_key_detect = (e) => {
     if (e.key === 'Enter') {
         this.setState({
-          node_array : generate_set_of_nodes(e.target.value, distance_matrix_generator(e.target.value))
+          distance_matrix : distance_matrix_generator(e.target.value),
+          node_array : generate_set_of_nodes(e.target.value, this.state.distance_matrix),
+          nodes : e.target.value
         })
     }
   }
@@ -169,7 +189,10 @@ class Dijkstra extends React.Component {
         <input type="text" placeholder = {this.state.nodes} onKeyDown = {this.enter_key_detect}/> 
         <br />
         If you press enter, it will update the distance matrix
-        {start_dijkstra(this.state.node_array)}
+        <br />
+        <Button onClick = {start_dijkstra(this.state.node_array, "node" + this.state.nodes, this.state.nodes)} >Hello World</Button> {
+          console.log("hello")
+        }
       </Container>
     )
   }
