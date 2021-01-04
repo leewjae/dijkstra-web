@@ -213,14 +213,19 @@ class Stack {
 }
 
 
-function main(every_city) {
+function main() {
+
+  var number_of_cities = window.prompt("Enter the number of cities");
+  var every_city = starter(number_of_cities);
 
   while (true) {
     var from = window.prompt("Enter the starting name (X to quit): ");
+    console.log(from)
     if (from === "X" || from === "x") {
       break;
     }
     var to = window.prompt("Enter the ending name (X to quit): ");
+    console.log(to)
     if (to === "X" || to === "x") {
       break;
     }
@@ -257,7 +262,7 @@ export default class Mapex extends React.Component {
   render() {
     return (
       <Container>
-      {main(starter())}
+      {main()}
     </Container>
     )
   }
